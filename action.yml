@@ -1,0 +1,39 @@
+
+name: 'Notify via slack'
+description: 'Tell team team about a new build'
+inputs:
+  SLACKBOT_SECRET: 
+    description: slackbot app secret
+  SLACKBOT_TOKEN:
+    description: slackbot app token
+  SLACKBOT_CHANNEL:
+    description: slack channel for bot to post to
+  build_number: 
+    description: Build number
+    required: false
+  build_version: 
+    description: Build version
+    required: false
+  build_type: 
+    description: Build type
+    required: false
+  number: 
+    description: Build number
+  notes: 
+    description: 'additional notes'
+    required: false
+  status:  # id of input
+    description: 'The status of the build'
+    default: 'working'
+  myToken:  # id of input
+    description: 'The github actor token'
+    required: true
+  ts: # id of slack thread
+    description: 'The slack thread'
+outputs:
+  ts: # output will be available to future steps
+    description: 'The current slack thread'
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
+  
