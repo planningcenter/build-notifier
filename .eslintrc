@@ -1,11 +1,34 @@
 {
-  "plugins": ["prettier"],
   "rules": {
+    "eqeqeq": ["error", "smart"],
+    "no-console": "warn",
+    "no-empty": "warn",
+    "no-restricted-imports": ["error",{
+      "paths":[{
+        "name": "react-native-gesture-handler",
+        "message": "Unless you ACTUALLY need this, please use react-native instead."
+      }]
+    }],
+    "no-underscore-dangle": "warn",
+    "no-unused-vars": ["warn", { "ignoreRestSiblings": true, "argsIgnorePattern": "^_" }],
+    "no-var": 2,
+    "object-shorthand": ["error", "always"],
     "prettier/prettier": "error"
   },
   "ignorePatterns": ["dist/"],
+  "parser": "@babel/eslint-parser",
   "parserOptions": {
-    "sourceType": "module",
-    "ecmaVersion": "latest"
-  }
+    "ecmaVersion": 8,
+    "requireConfigFile": false,
+    "babelOptions": {
+      "babelrc": false,
+      "configFile": false,
+      // your babel options
+      "presets": ["@babel/preset-env"],
+    },
+  },
+  "plugins": ["prettier"],
+  "extends": [
+    "prettier"
+  ]
 }

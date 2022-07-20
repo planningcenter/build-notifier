@@ -17,16 +17,19 @@
     "@actions/core": "^1.8.2",
     "@actions/exec": "^1.1.1",
     "@actions/github": "^5.0.3",
-    "@babel/eslint-parser": "^7.18.9",
     "@slack/bolt": "^3.11.1",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "onchange": "^7.1.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.18.9",
+    "@babel/eslint-parser": "^7.18.9",
+    "@babel/preset-env": "^7.18.9",
     "@vercel/ncc": "^0.31.1",
-    "eslint": "8.16.0",
+    "eslint": "^8.16.0",
+    "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "prettier": "2.6.2"
+    "prettier": "^2.6.2"
   }
 }
