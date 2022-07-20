@@ -56055,7 +56055,7 @@ const getActionConfig = () => {
   }
 
   return inputs.reduce((c, input) => {
-    c[input] = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput(input)
+    c[input] = c[input] || _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput(input)
     return c
   }, config)
 }
@@ -56072,6 +56072,8 @@ const {
   status,
   ts,
 } = getActionConfig()
+
+_actions_core__WEBPACK_IMPORTED_MODULE_0__.debug(getActionConfig())
 
 const { App } = _slack_bolt__WEBPACK_IMPORTED_MODULE_2__
 
@@ -56112,15 +56114,16 @@ const updateSlackChannel = async () => {
     return _actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput(
       'config',
       JSON.stringify({
-        githubToken,
+        build_number: number,
+        build_type: type,
+        build_version: version,
+        github_token: githubToken,
         notes,
-        number,
-        slackbotChannel,
-        slackbotSecret,
-        slackbotToken,
+        slackbot_channel: slackbotChannel,
+        slackbot_secret: slackbotSecret,
+        slackbot_token: slackbotToken,
         status,
         ts,
-        version,
       })
     )
   } catch (e) {
