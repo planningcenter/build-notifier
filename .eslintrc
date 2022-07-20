@@ -3,5 +3,9 @@
   "rules": {
     "prettier/prettier": "error"
   },
-  "ignorePatterns": ["dist/"]
+  "ignorePatterns": ["dist/"],
+  "parserOptions": {
+    "sourceType": "module"
+  },
+  "parser": "@babel/eslint-parser"
 }
