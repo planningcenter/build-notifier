@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "preversion": "npm run all",
     "lint": "eslint . --resolve-plugins-relative-to . --fix",
     "prepare": "ncc build index.js -o dist --source-map --license licenses.txt",
     "test": "echo \"Error: no test specified\" && exit 1",

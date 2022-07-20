@@ -56055,7 +56055,7 @@ const getActionConfig = () => {
   }
 
   return inputs.reduce((c, input) => {
-    c[input] = c[input] || _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput(input)
+    c[input] = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput(input) || c[input]
     return c
   }, config)
 }
