@@ -1,30 +1,32 @@
 # build-notifier
 Github Action for build notifications
 
-  slackbot_secret:  slackbot app secret - This is a org level github secret `PICO_THE_BUILDER_SLACKBOT_SECRET`.  Ask platform if it's not in your repo
+### Parameters:
+
+  - **slackbot_secret:** -  Slackbot app secret - This is a org level github secret `PICO_THE_BUILDER_SLACKBOT_SECRET`.  Ask platform if it's not in your repo
   
-  slackbot_token: slackbot app oath token - This is a org level github secret `PICO_THE_BUILDER_SLACKBOT_TOKEN`.  Ask platform if it's not in your repo
+  - **slackbot_token:** - slackbot app oath token - This is a org level github secret `PICO_THE_BUILDER_SLACKBOT_TOKEN`.  Ask platform if it's not in your repo
 
-  slackbot_channel: slack channel for bot to post to.  You can find this at the bottom of the "About" section of the slack channel.  Example Channel ID: `C0198QJ6FP0`
+  - **slackbot_channel:** - Slack channel for the notification to be posted to.  You can find this at the bottom of the "About" section of the slack channel.  Example Channel ID: `C0198QJ6FP0`
 
-  build_number: The Build number of the application being built
+  - **build_number:** - The Build number of the application being built
 
-  build_version: The Version number of the application being built
+  - **build_version:** - The Version number of the application being built
 
-  build_type:  The type of build - Acceptable values are ["playstore", "appstore", "firebase", "test", "ios", "android"]
+  - **build_type:** -  The type of build - Acceptable values are ["playstore", "appstore", "firebase", "test", "ios", "android"]
       
-  notes: 'additional notes'
+  - **notes:** - Additional optional notes
 
-  status: The status of the build - default: 'working' - acceptable values: ["success", "failure", "working", "cancelled"]
+  - **status:** - The status of the build - default: 'working' - acceptable values: ["success", "failure", "working", "cancelled"]
     
-  github_token:  The github actor token
+  - **github_token:** -  The github actor token
     
-  ts:  ID of slack thread 'The slack thread' - this app will populate this value and you don't need to provide it as long as you pass a `config`
+  - **ts:** -  ID of slack thread 'The slack thread' - this app will populate this value and you don't need to provide it as long as you pass a `config`
 
-  config: As a way to pass values from one notify step to another, we use a config value as the output of a previous step.  This config passes all the input values above that are sent and you can override any value in the config by passing it in as an input to a future step.  Example: `config: ${{ steps.notify.outputs.config }}`
+  - **config:** - As a way to pass values from one notify step to another, we use a config value as the output of a previous step.  This config passes all the input values above that are sent and you can override any value in the config by passing it in as an input to a future step.  Example: `config: ${{ steps.notify.outputs.config }}`
 
+### Example Github Action Workflow Usage:
 
-Usage inside a Github Action workflow:
 
       - name: notify
       id: notify
