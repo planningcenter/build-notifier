@@ -184,7 +184,7 @@ const NewBuildMessage = ({ messageConfig, commit, build, actor, notes, context }
           },
           {
             type: 'mrkdwn',
-            text: `*Notes*\n${notes}`,
+            text: `*Notes*\n${notes ?? ''}`,
           },
         ],
       },
