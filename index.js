@@ -42,6 +42,8 @@ const {
   ts,
 } = getActionConfig()
 
+core.debug(getActionConfig())
+
 const { App } = bolt
 
 const app = new App({
@@ -81,15 +83,16 @@ const updateSlackChannel = async () => {
     return core.setOutput(
       'config',
       JSON.stringify({
-        githubToken,
+        build_number: number,
+        build_type: type,
+        build_version: version,
+        github_token: githubToken,
         notes,
-        number,
-        slackbotChannel,
-        slackbotSecret,
-        slackbotToken,
+        slackbot_channel: slackbotChannel,
+        slackbot_secret: slackbotSecret,
+        slackbot_token: slackbotToken,
         status,
         ts,
-        version,
       })
     )
   } catch (e) {
