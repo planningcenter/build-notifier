@@ -1,19 +1,46 @@
 /* eslint-disable no-console */
-import bolt from '@slack/bolt'
 import core from '@actions/core'
 import github, { context } from '@actions/github'
+import bolt from '@slack/bolt'
 
-// inputs
-const slackbotSecret = core.getInput('SLACKBOT_SECRET')
-const slackbotToken = core.getInput('SLACKBOT_TOKEN')
-const slackbotChannel = core.getInput('SLACKBOT_CHANNEL')
-const githubToken = core.getInput('myToken')
-const version = core.getInput('build_version')
-const number = core.getInput('build_number')
-const type = core.getInput('build_type')
-const status = core.getInput('status')
-const notes = core.getInput('notes')
-const ts = core.getInput('ts')
+const getActionConfig = () => {
+  const inputs = [
+    'build_number',
+    'build_type',
+    'build_version',
+    'github_token',
+    'notes',
+    'slackbot_channel',
+    'slackbot_secret',
+    'slackbot_token',
+    'status',
+    'ts',
+  ]
+  let config = {}
+  try {
+    config = JSON.parse(core.getInput('config')) // what if this errors?
+  } catch (e) {
+    core.debug(e)
+  }
+
+  return inputs.reduce((c, input) => {
+    c[input] = core.getInput(input)
+    return c
+  }, config)
+}
+
+const {
+  build_number: number,
+  build_type: type,
+  build_version: version,
+  github_token: githubToken,
+  notes,
+  slackbot_channel: slackbotChannel,
+  slackbot_secret: slackbotSecret,
+  slackbot_token: slackbotToken,
+  status,
+  ts,
+} = getActionConfig()
 
 const { App } = bolt
 
@@ -49,7 +76,22 @@ const updateSlackChannel = async () => {
     })
     const method = messageConfig.ts ? 'update' : 'postMessage'
     const response = await app.client.chat[method](message)
-    core.setOutput('ts', response.ts)
+    const { ts } = response
+
+    return core.setOutput(
+      'config',
+      JSON.stringify({
+        githubToken,
+        notes,
+        number,
+        slackbotChannel,
+        slackbotSecret,
+        slackbotToken,
+        status,
+        ts,
+        version,
+      })
+    )
   } catch (e) {
     console.error(e)
   }

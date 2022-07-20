@@ -26,42 +26,28 @@ Usage inside a Github Action workflow:
 
       - name: notify
         id: notify
-        uses: planningcenter/build-notifier@0.01
+        uses: planningcenter/build-notifier@0.02
         with:
           build_number: ${{ steps.build_step.outputs.build_number }}
-          build_version: ${{ steps.version_step.outputs.version }}
           build_type: 'Appstore'
+          build_version: ${{ steps.version_step.outputs.version }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          notes: 'Lemme tell you a thing about this build'
+          slackbot_channel: ${{ secrets.SLACKBOT_CHANNEL }}
+          slackbot_secret: ${{ secrets.PICO_THE_BUILDER_SLACKBOT_SECRET }}
+          slackbot_token: ${{ secrets.PICO_THE_BUILDER_SLACKBOT_TOKEN }}
           status: 'working'
-          myToken: ${{ secrets.GITHUB_TOKEN }}
-          SLACKBOT_SECRET: ${{ secrets.PICO_THE_BUILDER_SLACKBOT_SECRET }}
-          SLACKBOT_TOKEN: ${{ secrets.PICO_THE_BUILDER_SLACKBOT_TOKEN }}
-          SLACKBOT_CHANNEL: ${{ secrets.SLACKBOT_CHANNEL }}
 
 
       - name: notify-success
-        uses: planningcenter/build-notifier@0.01
+        uses: planningcenter/build-notifier@0.02
         with:
-          build_number: ${{ steps.build_step.outputs.build_number }}
-          build_version: ${{ steps.version_step.outputs.version }}
-          build_type: 'Appstore'
-          status: 'success'
-          myToken: ${{ secrets.GITHUB_TOKEN }}
-          SLACKBOT_SECRET: ${{ secrets.PICO_THE_BUILDER_SLACKBOT_SECRET }}
-          SLACKBOT_TOKEN: ${{ secrets.PICO_THE_BUILDER_SLACKBOT_TOKEN }}
-          SLACKBOT_CHANNEL: ${{ secrets.SLACKBOT_CHANNEL }}
-          ts: ${{ steps.notify.outputs.ts }}
+          status: ${{ job.status }}
+          config: ${{ steps.notify.outputs.config }}
 
       - name: notify-failure
         if: failure() || cancelled()
-        uses: planningcenter/build-notifier@0.01
+        uses: planningcenter/build-notifier@0.02
         with:
-          build_number: ${{ steps.build_step.outputs.build_number }}
-          build_version: ${{ steps.version_step.outputs.version }}
-          build_type: 'Appstore'
           status: ${{ job.status }}
-          notes: 'Check details on Github.'
-          myToken: ${{ secrets.GITHUB_TOKEN }}
-          SLACKBOT_SECRET: ${{ secrets.PICO_THE_BUILDER_SLACKBOT_SECRET }}
-          SLACKBOT_TOKEN: ${{ secrets.PICO_THE_BUILDER_SLACKBOT_TOKEN }}
-          SLACKBOT_CHANNEL: ${{ secrets.SLACKBOT_CHANNEL }}
-          ts: ${{ steps.notify.outputs.ts }}
+          config: ${{ steps.notify.outputs.config }}
