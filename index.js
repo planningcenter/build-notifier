@@ -24,7 +24,7 @@ const getActionConfig = () => {
   }
 
   return inputs.reduce((c, input) => {
-    c[input] = core.getInput(input)
+    c[input] = c[input] || core.getInput(input)
     return c
   }, config)
 }
