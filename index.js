@@ -5,6 +5,7 @@ import bolt from '@slack/bolt'
 
 const getActionConfig = () => {
   const inputs = [
+    'app_name',
     'build_number',
     'build_type',
     'build_version',
@@ -30,6 +31,7 @@ const getActionConfig = () => {
 }
 
 const {
+  app_name: appName,
   build_number: number,
   build_type: type,
   build_version: version,
@@ -61,6 +63,7 @@ const octokit = github.getOctokit(githubToken)
 const updateSlackChannel = async () => {
   try {
     const build = {
+      appName,
       type,
       number,
       status,
@@ -83,6 +86,7 @@ const updateSlackChannel = async () => {
     return core.setOutput(
       'config',
       JSON.stringify({
+        app_name: appName,
         build_number: number,
         build_type: type,
         build_version: version,
@@ -125,7 +129,18 @@ const NewBuildMessage = ({ messageConfig, commit, build, actor, notes, context }
     android: ':android: ',
   }[build?.type.toLowerCase()]
 
-  const text = `${buildIcon ?? ''}${build.type} build #${build.number} by ${actor.name}`
+  const appIcon = {
+    services: ':services: ',
+    music_stand: ':musicstand: ',
+    church_center_app: ':cca: ',
+    check_ins: ':check-ins: ',
+    headcounts: ':headcounts: ',
+    people: ':people: ',
+  }[build?.appName.toLowerCase()]
+
+  const text = `${appIcon ?? ''}${buildIcon ?? ''}version ${build.version} build #${
+    build.number
+  } by ${actor.name}`
   const refString = context.ref.replace('refs/heads/', '')
 
   return {
