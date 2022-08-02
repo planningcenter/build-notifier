@@ -16,6 +16,7 @@ const getActionConfig = () => {
     'slackbot_secret',
     'slackbot_token',
     'status',
+    'title',
     'ts',
   ]
   let config = {}
@@ -38,11 +39,12 @@ const {
   build_version: version,
   github_token: githubToken,
   notes,
-  include_secrets,
+  include_secrets: includeSecrets,
   slackbot_channel: slackbotChannel,
   slackbot_secret: slackbotSecret,
   slackbot_token: slackbotToken,
   status,
+  title,
   ts,
 } = getActionConfig()
 
@@ -65,27 +67,25 @@ const octokit = github.getOctokit(githubToken)
 
 const updateSlackChannel = async () => {
   try {
-    const build = {
-      appName,
-      type,
-      number,
-      status,
-      version,
-    }
     const commit = await getCommit()
     const { data: actor } = await getActor()
     const message = NewBuildMessage({
-      messageConfig,
-      commit,
-      build,
       actor,
-      notes,
+      appName,
+      commit,
       context: github.context,
+      messageConfig,
+      notes,
+      number,
+      status,
+      title,
+      type,
+      version,
     })
     const method = messageConfig.ts ? 'update' : 'postMessage'
     const response = await app.client.chat[method](message)
     const { ts } = response
-    const secrets = /false/.test(include_secrets) // false || 'false'
+    const secrets = /false/.test(includeSecrets) // false || 'false'
       ? {}
       : {
           github_token: githubToken,
@@ -101,8 +101,10 @@ const updateSlackChannel = async () => {
         build_number: number,
         build_type: type,
         build_version: version,
+        include_secrets: includeSecrets,
         notes,
         status,
+        title,
         ts,
         ...secrets,
       })
@@ -119,77 +121,56 @@ const getCommit = () =>
     commit_sha: github.context.sha,
   })
 
-const NewBuildMessage = ({ messageConfig, commit, build, actor, notes, context }) => {
+const NewBuildMessage = ({
+  actor,
+  appName,
+  commit,
+  context,
+  messageConfig,
+  notes,
+  number,
+  status,
+  title,
+  type,
+  version,
+}) => {
   const { data } = commit
   const { message } = data
-  const statusMessage = {
-    success: ':pico-success: *Build Succeeded*',
-    failure: ':pico-fail: *Build failed*',
-    working: ':pico-working: *Building*',
-    cancelled: ':pico-fail: *Build cancelled*',
-  }
-  const buildIcon = {
-    playstore: ':googleplay: ',
-    appstore: ':app_store: ',
-    firebase: ':firebase: ',
-    test: ':firebase: ',
-    ios: ':ios: ',
-    android: ':android: ',
-  }[build?.type?.toLowerCase()]
-
-  const appIcon = {
-    services: ':services: ',
-    music_stand: ':musicstand: ',
-    church_center_app: ':cca: ',
-    check_ins: ':check-ins: ',
-    headcounts: ':headcounts: ',
-    people: ':people: ',
-  }[build?.appName?.toLowerCase()]
-
-  const text = `${appIcon ?? ''}${buildIcon ?? ''}version ${build.version} build #${
-    build.number
-  } by ${actor.name}`
   const refString = context.ref.replace('refs/heads/', '')
+  const fields = [
+    type && `*Type:*\n${type}`,
+    number && `*Number:*\n${number}`,
+    appName && `*App:*\n${appName}`,
+    version && `*Version:*\n${version}`,
+    `*Ref:*\n<${buildBaseUrl(context)}/tree/${refString}|${refString}>`,
+    `*SHA:*\n*<${commit.data.html_url}|${context.sha.slice(-8)}>*`,
+    generateStatusMessage(status),
+    `*Follow updates here*\n<${buildBaseUrl(context)}/actions/runs/${
+      context.runId
+    }|Link to updates>`,
+    `*Commit*\n${message}`,
+    notes && `*Notes*\n${notes}`,
+  ]
 
   return {
     ...messageConfig,
-    text,
+    text: title,
     blocks: [
       {
         type: 'header',
         text: {
           type: 'plain_text',
-          text,
+          text: title,
         },
       },
       {
         type: 'section',
-        fields: [
-          {
+        fields: fields
+          .filter(f => f)
+          .map(text => ({
             type: 'mrkdwn',
-            text: `*Version:*\n${build.version}`,
-          },
-          {
-            type: 'mrkdwn',
-            text: `*Ref:*\n<${buildBaseUrl(context)}/tree/${refString}|${refString}>`,
-          },
-          {
-            type: 'mrkdwn',
-            text: `*SHA:*\n*<${commit.data.html_url}|${context.sha.slice(-8)}>*`,
-          },
-          {
-            type: 'mrkdwn',
-            text: `*Status:*\n${
-              statusMessage[build.status?.toLowerCase()] ?? statusMessage['working']
-            }`,
-          },
-          {
-            type: 'mrkdwn',
-            text: `*Follow updates here*\n<${buildBaseUrl(context)}/actions/runs/${
-              context.runId
-            }|Link to updates>`,
-          },
-        ],
+            text,
+          })),
         accessory: {
           type: 'image',
           image_url:
@@ -198,22 +179,17 @@ const NewBuildMessage = ({ messageConfig, commit, build, actor, notes, context }
           alt_text: 'author image',
         },
       },
-      {
-        type: 'section',
-        fields: [
-          {
-            type: 'mrkdwn',
-            text: `*Commit*\n${message}`,
-          },
-          {
-            type: 'mrkdwn',
-            text: `*Notes*\n${notes ?? ''}`,
-          },
-        ],
-      },
     ],
   }
 }
+
+const generateStatusMessage = (status = 'working') =>
+  ({
+    success: ':pico-success: *Build Succeeded*',
+    failure: ':pico-fail: *Build failed*',
+    working: ':pico-working: *Building*',
+    cancelled: ':pico-fail: *Build cancelled*',
+  }[status.toLowerCase()])
 
 const buildBaseUrl = ({ serverUrl, repo }) => `${serverUrl}/${repo.owner}/${repo.repo}`
 
