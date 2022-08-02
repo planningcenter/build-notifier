@@ -56173,6 +56173,7 @@ const NewBuildMessage = ({
     number && `*Number:*\n${number}`,
     appName && `*App:*\n${appName}`,
     version && `*Version:*\n${version}`,
+    `*Triggered by:*\n${actor.name}`,
     `*Ref:*\n<${buildBaseUrl(context)}/tree/${refString}|${refString}>`,
     `*SHA:*\n*<${commit.data.html_url}|${context.sha.slice(-8)}>*`,
     generateStatusMessage(status),
