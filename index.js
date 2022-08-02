@@ -135,7 +135,7 @@ const NewBuildMessage = ({ messageConfig, commit, build, actor, notes, context }
     test: ':firebase: ',
     ios: ':ios: ',
     android: ':android: ',
-  }[build?.type.toLowerCase()]
+  }[build?.type?.toLowerCase()]
 
   const appIcon = {
     services: ':services: ',
@@ -144,7 +144,7 @@ const NewBuildMessage = ({ messageConfig, commit, build, actor, notes, context }
     check_ins: ':check-ins: ',
     headcounts: ':headcounts: ',
     people: ':people: ',
-  }[build?.appName.toLowerCase()]
+  }[build?.appName?.toLowerCase()]
 
   const text = `${appIcon ?? ''}${buildIcon ?? ''}version ${build.version} build #${
     build.number
