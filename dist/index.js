@@ -56176,12 +56176,12 @@ const NewBuildMessage = ({
     `*Triggered by:*\n${actor.name}`,
     `*Ref:*\n<${buildBaseUrl(context)}/tree/${refString}|${refString}>`,
     `*SHA:*\n*<${commit.data.html_url}|${context.sha.slice(-8)}>*`,
+    `*Commit*\n${message}`,
+    notes && `*Notes*\n${notes}`,
     generateStatusMessage(status),
     `*Follow updates here*\n<${buildBaseUrl(context)}/actions/runs/${
       context.runId
     }|Link to updates>`,
-    `*Commit*\n${message}`,
-    notes && `*Notes*\n${notes}`,
   ]
 
   return {
