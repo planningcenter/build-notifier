@@ -2,6 +2,9 @@
 name: 'Notify via slack'
 description: 'Tell team team about a new build'
 inputs:
+  app_name: 
+    description: Name of app being built
+    required: false
   build_number: 
     description: Build number
     required: false
