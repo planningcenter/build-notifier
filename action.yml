@@ -16,6 +16,9 @@ inputs:
   github_token:  # id of input
     description: 'The github actor token'
     required: true
+  include_secrets:
+    description: 'Return secrets with config'
+    required: false
   notes: 
     description: 'additional notes'
     required: false
