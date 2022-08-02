@@ -11,6 +11,7 @@ const getActionConfig = () => {
     'build_version',
     'github_token',
     'notes',
+    'include_secrets',
     'slackbot_channel',
     'slackbot_secret',
     'slackbot_token',
@@ -37,6 +38,7 @@ const {
   build_version: version,
   github_token: githubToken,
   notes,
+  include_secrets,
   slackbot_channel: slackbotChannel,
   slackbot_secret: slackbotSecret,
   slackbot_token: slackbotToken,
@@ -56,6 +58,7 @@ const app = new App({
 const messageConfig = {
   channel: slackbotChannel,
 }
+
 if (ts) messageConfig.ts = ts
 
 const octokit = github.getOctokit(githubToken)
@@ -82,6 +85,14 @@ const updateSlackChannel = async () => {
     const method = messageConfig.ts ? 'update' : 'postMessage'
     const response = await app.client.chat[method](message)
     const { ts } = response
+    const secrets = /false/.test(include_secrets) // false || 'false'
+      ? {}
+      : {
+          github_token: githubToken,
+          slackbot_channel: slackbotChannel,
+          slackbot_secret: slackbotSecret,
+          slackbot_token: slackbotToken,
+        }
 
     return core.setOutput(
       'config',
@@ -90,13 +101,10 @@ const updateSlackChannel = async () => {
         build_number: number,
         build_type: type,
         build_version: version,
-        github_token: githubToken,
         notes,
-        slackbot_channel: slackbotChannel,
-        slackbot_secret: slackbotSecret,
-        slackbot_token: slackbotToken,
         status,
         ts,
+        ...secrets,
       })
     )
   } catch (e) {
