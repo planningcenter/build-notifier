@@ -2,6 +2,9 @@
 name: 'Notify via slack'
 description: 'Tell team team about a new build'
 inputs:
+  app_name: 
+    description: Name of app being built
+    required: false
   build_number: 
     description: Build number
     required: false
@@ -16,18 +19,27 @@ inputs:
   github_token:  # id of input
     description: 'The github actor token'
     required: true
+  include_secrets:
+    description: 'Return secrets with config'
+    required: false
   notes: 
     description: 'additional notes'
     required: false
   slackbot_channel:
     description: slack channel for bot to post to
+    required: true
   slackbot_secret: 
     description: slackbot app secret
+    required: true
   slackbot_token:
     description: slackbot app token
+    required: true
   status:  # id of input
     description: 'The status of the build'
     default: 'working'
+  title: 
+    description: 'The title for the message'
+    required: true
   ts: # id of slack thread
     description: 'The slack thread'
 
