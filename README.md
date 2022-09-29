@@ -35,7 +35,7 @@ Optional Parameters
 
       - name: notify
       id: notify
-      uses: planningcenter/build-notifier@v0.0.9
+      uses: planningcenter/build-notifier@v0.1.0
       with:
         title: ":google_play: Playstore build #${{ github.run_number }}"
         build_number: ${{ steps.build_step.outputs.build_number }}
@@ -49,14 +49,14 @@ Optional Parameters
 
 
       - name: notify-success
-      uses: planningcenter/build-notifier@v0.0.9
+      uses: planningcenter/build-notifier@v0.1.0
       with:
         status: 'success'
         config: ${{ steps.notify.outputs.config }}
 
       - name: notify-failure
       if: failure() || cancelled()
-      uses: planningcenter/build-notifier@v0.0.9
+      uses: planningcenter/build-notifier@v0.1.0
       with:
         status: ${{ job.status }}
         notes: 'Check details on Github.'
