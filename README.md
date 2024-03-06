@@ -5,6 +5,7 @@ Github Action for build notifications
 ### Parameters:
 
 Required Parameters:
+
 - **slackbot_secret:** - Slackbot app secret - This is a org level github secret `PICO_THE_BUILDER_SLACKBOT_SECRET`. Ask platform if it's not in your repo
 
 - **slackbot_token:** - slackbot app oath token - This is a org level github secret `PICO_THE_BUILDER_SLACKBOT_TOKEN`. Ask platform if it's not in your repo
@@ -15,6 +16,7 @@ Required Parameters:
 - **title:** - The title of your notification
 
 Optional Parameters
+
 - **app_name:** - The name of the app being built. Acceptable values are ["services", "music_stand", "church_center_app", "check_ins", "headcounts", "people"]
 
 - **build_number:** - The Build number of the application being built
@@ -35,7 +37,7 @@ Optional Parameters
 
       - name: notify
       id: notify
-      uses: planningcenter/build-notifier@v0.1.0
+      uses: planningcenter/build-notifier@v0.1.2
       with:
         title: ":google_play: Playstore build #${{ github.run_number }}"
         build_number: ${{ steps.build_step.outputs.build_number }}
@@ -49,14 +51,14 @@ Optional Parameters
 
 
       - name: notify-success
-      uses: planningcenter/build-notifier@v0.1.0
+      uses: planningcenter/build-notifier@v0.1.2
       with:
         status: 'success'
         config: ${{ steps.notify.outputs.config }}
 
       - name: notify-failure
       if: failure() || cancelled()
-      uses: planningcenter/build-notifier@v0.1.0
+      uses: planningcenter/build-notifier@v0.1.2
       with:
         status: ${{ job.status }}
         notes: 'Check details on Github.'
