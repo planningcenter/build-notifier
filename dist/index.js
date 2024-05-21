@@ -91091,8 +91091,8 @@ const generateStatusMessage = (status = 'working') => ({
     failure: ':pico-fail: *Build failed*',
     working: ':pico-working: *Building*',
     cancelled: ':pico-fail: *Build cancelled*',
-}[status.toLowerCase()]);
-const buildBaseUrl = ({ serverUrl, repo }) => `${serverUrl}/${repo.owner}/${repo.repo}`;
+})[status.toLowerCase()];
+const buildBaseUrl = ({ serverUrl, repo, }) => `${serverUrl}/${repo.owner}/${repo.repo}`;
 updateSlackChannel();
 
 })();
