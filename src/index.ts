@@ -1,33 +1,51 @@
 /* eslint-disable no-console */
 import core from '@actions/core'
 import github, { context } from '@actions/github'
+import { Context } from '@actions/github/lib/context.js'
+import { OctokitResponse } from '@octokit/types'
 import bolt from '@slack/bolt'
 
-const getActionConfig = () => {
-  const inputs = [
-    'app_name',
-    'build_number',
-    'build_type',
-    'build_version',
-    'github_token',
-    'notes',
-    'include_secrets',
-    'slackbot_channel',
-    'slackbot_secret',
-    'slackbot_token',
-    'status',
-    'title',
-    'ts',
-  ]
-  let config = {}
-  try {
-    config = JSON.parse(core.getInput('config')) // what if this errors?
-  } catch (e) {
-    core.debug(e)
-  }
+type ActionConfig = {
+  app_name: string
+  build_number: string
+  build_type: string
+  build_version: string
+  github_token: string
+  notes: string
+  include_secrets: string
+  slackbot_channel: string
+  slackbot_secret: string
+  slackbot_token: string
+  status: string
+  title: string
+  ts: string
+  thread_ts: string
+}
+
+const inputs: Array<keyof ActionConfig> = [
+  'app_name',
+  'build_number',
+  'build_type',
+  'build_version',
+  'github_token',
+  'notes',
+  'include_secrets',
+  'slackbot_channel',
+  'slackbot_secret',
+  'slackbot_token',
+  'status',
+  'title',
+  'ts',
+]
+
+const getActionConfig = (): ActionConfig => {
+  let config: ActionConfig = JSON.parse(core.getInput('config'))
 
   return inputs.reduce((c, input) => {
-    c[input] = core.getInput(input) || c[input]
+    const value = core.getInput(input)
+
+    c[input] = value || c[input] || ''
+
     return c
   }, config)
 }
@@ -48,7 +66,7 @@ const {
   ts,
 } = getActionConfig()
 
-core.debug(getActionConfig())
+core.debug(JSON.stringify(getActionConfig(), null, 2))
 
 const { App } = bolt
 
@@ -57,11 +75,10 @@ const app = new App({
   token: slackbotToken,
 })
 
-const messageConfig = {
+const messageConfig: MessageConfig = {
   channel: slackbotChannel,
+  ts,
 }
-
-if (ts) messageConfig.ts = ts
 
 const octokit = github.getOctokit(githubToken)
 
@@ -133,6 +150,18 @@ const NewBuildMessage = ({
   title,
   type,
   version,
+}: {
+  actor: Actor['data']
+  appName: string
+  commit: Commit
+  context: Context
+  messageConfig: MessageConfig
+  notes: any
+  number: any
+  status: any
+  title: any
+  type: any
+  version: any
 }) => {
   const { data } = commit
   const { message } = data
@@ -190,8 +219,63 @@ const generateStatusMessage = (status = 'working') =>
     failure: ':pico-fail: *Build failed*',
     working: ':pico-working: *Building*',
     cancelled: ':pico-fail: *Build cancelled*',
-  }[status.toLowerCase()])
+  })[status.toLowerCase()]
 
-const buildBaseUrl = ({ serverUrl, repo }) => `${serverUrl}/${repo.owner}/${repo.repo}`
+const buildBaseUrl = ({
+  serverUrl,
+  repo,
+}: {
+  serverUrl: string
+  repo: { owner: string; repo: string }
+}) => `${serverUrl}/${repo.owner}/${repo.repo}`
 
 updateSlackChannel()
+
+type MessageConfig = {
+  channel: string
+  ts: string
+}
+
+type Actor = OctokitResponse<{
+  login: string
+  id: number
+  node_id: string
+  avatar_url: string
+  gravatar_id: string | null
+  url: string
+  html_url: string
+  followers_url: string
+  following_url: string
+  gists_url: string
+  starred_url: string
+  subscriptions_url: string
+  organizations_url: string
+  repos_url: string
+  events_url: string
+  received_events_url: string
+  type: string
+  site_admin: boolean
+  name: string | null
+}>
+
+type Commit = OctokitResponse<{
+  sha: string
+  node_id: string
+  url: string
+  author: {
+    date: string
+    email: string
+    name: string
+  }
+  committer: {
+    date: string
+    email: string
+    name: string
+  }
+  message: string
+  tree: {
+    sha: string
+    url: string
+  }
+  html_url: string
+}>
