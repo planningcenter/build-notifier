@@ -19,7 +19,6 @@ type ActionConfig = {
   status: string
   title: string
   ts: string
-  thread_ts: string
 }
 
 const inputs: Array<keyof ActionConfig> = [
