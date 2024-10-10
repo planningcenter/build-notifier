@@ -90969,6 +90969,8 @@ const inputs = [
     'status',
     'title',
     'ts',
+    'ios_build_url',
+    'android_build_url',
 ];
 const getActionConfig = () => {
     let config = JSON.parse(_actions_core__WEBPACK_IMPORTED_MODULE_0___default().getInput('config'));
@@ -90978,7 +90980,7 @@ const getActionConfig = () => {
         return c;
     }, config);
 };
-const { app_name: appName, build_number: number, build_type: type, build_version: version, github_token: githubToken, notes, include_secrets: includeSecrets, slackbot_channel: slackbotChannel, slackbot_secret: slackbotSecret, slackbot_token: slackbotToken, status, title, ts, } = getActionConfig();
+const { app_name: appName, build_number: number, build_type: type, build_version: version, github_token: githubToken, notes, include_secrets: includeSecrets, slackbot_channel: slackbotChannel, slackbot_secret: slackbotSecret, slackbot_token: slackbotToken, status, title, ts, ios_build_url: iosBuildUrl, android_build_url: androidBuildUrl, } = getActionConfig();
 _actions_core__WEBPACK_IMPORTED_MODULE_0___default().debug(JSON.stringify(getActionConfig(), null, 2));
 const { App } = (_slack_bolt__WEBPACK_IMPORTED_MODULE_2___default());
 const app = new App({
@@ -91006,6 +91008,8 @@ const updateSlackChannel = async () => {
             title,
             type,
             version,
+            iosBuildUrl,
+            androidBuildUrl,
         });
         const method = messageConfig.ts ? 'update' : 'postMessage';
         const response = await app.client.chat[method](message);
@@ -91040,10 +91044,11 @@ const getCommit = () => octokit.rest.git.getCommit({
     ...(_actions_github__WEBPACK_IMPORTED_MODULE_1___default().context.repo),
     commit_sha: (_actions_github__WEBPACK_IMPORTED_MODULE_1___default().context.sha),
 });
-const NewBuildMessage = ({ actor, appName, commit, context, messageConfig, notes, number, status, title, type, version, }) => {
+const NewBuildMessage = ({ actor, appName, commit, context, messageConfig, notes, number, status, title, type, version, iosBuildUrl, androidBuildUrl, }) => {
     const { data } = commit;
     const { message } = data;
     const refString = context.ref.replace('refs/heads/', '');
+    const isEasBuild = Boolean(iosBuildUrl || androidBuildUrl);
     const fields = [
         type && `*Type:*\n${type}`,
         number && `*Number:*\n${number}`,
@@ -91054,8 +91059,11 @@ const NewBuildMessage = ({ actor, appName, commit, context, messageConfig, notes
         `*SHA:*\n*<${commit.data.html_url}|${context.sha.slice(-8)}>*`,
         `*Commit*\n${message}`,
         notes && `*Notes*\n${notes}`,
-        generateStatusMessage(status),
-        `*Follow updates here*\n<${buildBaseUrl(context)}/actions/runs/${context.runId}|Link to updates>`,
+        !isEasBuild && generateStatusMessage(status),
+        !isEasBuild &&
+            `*Follow updates here*\n<${buildBaseUrl(context)}/actions/runs/${context.runId}|Link to updates>`,
+        iosBuildUrl && `*iOS Build*\n<${iosBuildUrl}|Watch :ios: build>`,
+        androidBuildUrl && `*Android Build*\n<${androidBuildUrl}|Watch :android: build>`,
     ];
     return {
         ...messageConfig,
