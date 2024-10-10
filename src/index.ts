@@ -1,9 +1,10 @@
 /* eslint-disable no-console */
-import core from '@actions/core'
-import github, { context } from '@actions/github'
+import * as core from '@actions/core'
+import * as github from '@actions/github'
 import { Context } from '@actions/github/lib/context.js'
 import { OctokitResponse } from '@octokit/types'
-import bolt from '@slack/bolt'
+import * as bolt from '@slack/bolt'
+const { context } = github
 
 type ActionConfig = {
   app_name: string

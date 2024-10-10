@@ -90955,6 +90955,9 @@ var __webpack_exports__ = {};
 
 
 
+const { context } = _actions_github__WEBPACK_IMPORTED_MODULE_1__;
+console.log(_actions_github__WEBPACK_IMPORTED_MODULE_1__);
+console.log(context);
 const inputs = [
     'app_name',
     'build_number',
@@ -90973,16 +90976,16 @@ const inputs = [
     'android_build_url',
 ];
 const getActionConfig = () => {
-    let config = JSON.parse(_actions_core__WEBPACK_IMPORTED_MODULE_0___default().getInput('config'));
+    let config = JSON.parse(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('config'));
     return inputs.reduce((c, input) => {
-        const value = _actions_core__WEBPACK_IMPORTED_MODULE_0___default().getInput(input);
+        const value = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput(input);
         c[input] = value || c[input] || '';
         return c;
     }, config);
 };
 const { app_name: appName, build_number: number, build_type: type, build_version: version, github_token: githubToken, notes, include_secrets: includeSecrets, slackbot_channel: slackbotChannel, slackbot_secret: slackbotSecret, slackbot_token: slackbotToken, status, title, ts, ios_build_url: iosBuildUrl, android_build_url: androidBuildUrl, } = getActionConfig();
-_actions_core__WEBPACK_IMPORTED_MODULE_0___default().debug(JSON.stringify(getActionConfig(), null, 2));
-const { App } = (_slack_bolt__WEBPACK_IMPORTED_MODULE_2___default());
+_actions_core__WEBPACK_IMPORTED_MODULE_0__.debug(JSON.stringify(getActionConfig(), null, 2));
+const { App } = _slack_bolt__WEBPACK_IMPORTED_MODULE_2__;
 const app = new App({
     signingSecret: slackbotSecret,
     token: slackbotToken,
@@ -90991,7 +90994,7 @@ const messageConfig = {
     channel: slackbotChannel,
     ts,
 };
-const octokit = _actions_github__WEBPACK_IMPORTED_MODULE_1___default().getOctokit(githubToken);
+const octokit = _actions_github__WEBPACK_IMPORTED_MODULE_1__.getOctokit(githubToken);
 const updateSlackChannel = async () => {
     try {
         const commit = await getCommit();
@@ -91000,7 +91003,7 @@ const updateSlackChannel = async () => {
             actor,
             appName,
             commit,
-            context: (_actions_github__WEBPACK_IMPORTED_MODULE_1___default().context),
+            context: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context,
             messageConfig,
             notes,
             number,
@@ -91022,7 +91025,7 @@ const updateSlackChannel = async () => {
                 slackbot_secret: slackbotSecret,
                 slackbot_token: slackbotToken,
             };
-        return _actions_core__WEBPACK_IMPORTED_MODULE_0___default().setOutput('config', JSON.stringify({
+        return _actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput('config', JSON.stringify({
             app_name: appName,
             build_number: number,
             build_type: type,
@@ -91039,10 +91042,10 @@ const updateSlackChannel = async () => {
         console.error(e);
     }
 };
-const getActor = () => octokit.rest.users.getByUsername({ username: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.actor });
+const getActor = () => octokit.rest.users.getByUsername({ username: context.actor });
 const getCommit = () => octokit.rest.git.getCommit({
-    ...(_actions_github__WEBPACK_IMPORTED_MODULE_1___default().context.repo),
-    commit_sha: (_actions_github__WEBPACK_IMPORTED_MODULE_1___default().context.sha),
+    ..._actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo,
+    commit_sha: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.sha,
 });
 const NewBuildMessage = ({ actor, appName, commit, context, messageConfig, notes, number, status, title, type, version, iosBuildUrl, androidBuildUrl, }) => {
     const { data } = commit;
