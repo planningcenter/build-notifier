@@ -27,6 +27,10 @@ Optional Parameters
 
 - **notes:** - Additional optional notes
 
+- **ios_build_url:** - The URL provided by EAS to track the iOS build
+
+- **android_build_url:** - The URL provided by EAS to track the iOS build
+
 - **status:** - The status of the build - default: 'working' - acceptable values: ["success", "failure", "working", "cancelled"]
 
 - **config:** - As a way to pass values from one notify step to another, we use a config value as the output of a previous step. This config passes all the input values above that are sent and you can override any value in the config by passing it in as an input to a future step. Example: `config: ${{ steps.notify.outputs.config }}`
