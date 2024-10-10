@@ -90956,8 +90956,6 @@ var __webpack_exports__ = {};
 
 
 const { context } = _actions_github__WEBPACK_IMPORTED_MODULE_1__;
-console.log(_actions_github__WEBPACK_IMPORTED_MODULE_1__);
-console.log(context);
 const inputs = [
     'app_name',
     'build_number',
@@ -91057,7 +91055,7 @@ const NewBuildMessage = ({ actor, appName, commit, context, messageConfig, notes
         number && `*Number:*\n${number}`,
         appName && `*App:*\n${appName}`,
         version && `*Version:*\n${version}`,
-        `*Triggered by:*\n${actor.name}`,
+        !isEasBuild && `*Triggered by:*\n${actor.name}`,
         `*Ref:*\n<${buildBaseUrl(context)}/tree/${refString}|${refString}>`,
         `*SHA:*\n*<${commit.data.html_url}|${context.sha.slice(-8)}>*`,
         `*Commit*\n${message}`,
@@ -91071,6 +91069,8 @@ const NewBuildMessage = ({ actor, appName, commit, context, messageConfig, notes
     return {
         ...messageConfig,
         text: title,
+        unfurl_links: false,
+        unfurl_media: false,
         blocks: [
             {
                 type: 'header',
