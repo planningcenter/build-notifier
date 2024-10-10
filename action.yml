@@ -25,6 +25,12 @@ inputs:
   notes: 
     description: 'additional notes'
     required: false
+  ios_build_url: 
+    description: 'The iOS build URL in EAS'
+    required: false
+  android_build_url: 
+    description: 'The Android build URL in EAS'
+    required: false
   slackbot_channel:
     description: slack channel for bot to post to
     required: true
@@ -36,6 +42,7 @@ inputs:
     required: true
   status:  # id of input
     description: 'The status of the build'
+    required: false
     default: 'working'
   title: 
     description: 'The title for the message'

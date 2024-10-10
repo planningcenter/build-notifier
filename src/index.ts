@@ -19,6 +19,8 @@ type ActionConfig = {
   status: string
   title: string
   ts: string
+  ios_build_url: string
+  android_build_url: string
 }
 
 const inputs: Array<keyof ActionConfig> = [
@@ -35,6 +37,8 @@ const inputs: Array<keyof ActionConfig> = [
   'status',
   'title',
   'ts',
+  'ios_build_url',
+  'android_build_url',
 ]
 
 const getActionConfig = (): ActionConfig => {
@@ -63,6 +67,8 @@ const {
   status,
   title,
   ts,
+  ios_build_url: iosBuildUrl,
+  android_build_url: androidBuildUrl,
 } = getActionConfig()
 
 core.debug(JSON.stringify(getActionConfig(), null, 2))
@@ -97,6 +103,8 @@ const updateSlackChannel = async () => {
       title,
       type,
       version,
+      iosBuildUrl,
+      androidBuildUrl,
     })
     const method = messageConfig.ts ? 'update' : 'postMessage'
     const response = await app.client.chat[method](message)
@@ -149,12 +157,16 @@ const NewBuildMessage = ({
   title,
   type,
   version,
+  iosBuildUrl,
+  androidBuildUrl,
 }: {
   actor: Actor['data']
   appName: string
   commit: Commit
   context: Context
   messageConfig: MessageConfig
+  iosBuildUrl: string
+  androidBuildUrl: string
   notes: any
   number: any
   status: any
@@ -165,6 +177,7 @@ const NewBuildMessage = ({
   const { data } = commit
   const { message } = data
   const refString = context.ref.replace('refs/heads/', '')
+  const isEasBuild = Boolean(iosBuildUrl || androidBuildUrl)
   const fields = [
     type && `*Type:*\n${type}`,
     number && `*Number:*\n${number}`,
@@ -175,10 +188,13 @@ const NewBuildMessage = ({
     `*SHA:*\n*<${commit.data.html_url}|${context.sha.slice(-8)}>*`,
     `*Commit*\n${message}`,
     notes && `*Notes*\n${notes}`,
-    generateStatusMessage(status),
-    `*Follow updates here*\n<${buildBaseUrl(context)}/actions/runs/${
-      context.runId
-    }|Link to updates>`,
+    !isEasBuild && generateStatusMessage(status),
+    !isEasBuild &&
+      `*Follow updates here*\n<${buildBaseUrl(context)}/actions/runs/${
+        context.runId
+      }|Link to updates>`,
+    iosBuildUrl && `*iOS Build*\n<${iosBuildUrl}|Watch :ios: build>`,
+    androidBuildUrl && `*Android Build*\n<${androidBuildUrl}|Watch :android: build>`,
   ]
 
   return {
