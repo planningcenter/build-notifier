@@ -177,6 +177,7 @@ const NewBuildMessage = ({
   const { data } = commit
   const { message } = data
   const refString = context.ref.replace('refs/heads/', '')
+  const isEasBuild = Boolean(iosBuildUrl || androidBuildUrl)
   const fields = [
     type && `*Type:*\n${type}`,
     number && `*Number:*\n${number}`,
@@ -187,10 +188,11 @@ const NewBuildMessage = ({
     `*SHA:*\n*<${commit.data.html_url}|${context.sha.slice(-8)}>*`,
     `*Commit*\n${message}`,
     notes && `*Notes*\n${notes}`,
-    generateStatusMessage(status),
-    `*Follow updates here*\n<${buildBaseUrl(context)}/actions/runs/${
-      context.runId
-    }|Link to updates>`,
+    !isEasBuild && generateStatusMessage(status),
+    !isEasBuild &&
+      `*Follow updates here*\n<${buildBaseUrl(context)}/actions/runs/${
+        context.runId
+      }|Link to updates>`,
     iosBuildUrl && `*iOS Build*\n<${iosBuildUrl}|Watch :ios: build>`,
     androidBuildUrl && `*Android Build*\n<${androidBuildUrl}|Watch :android: build>`,
   ]
