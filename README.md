@@ -29,7 +29,7 @@ Optional Parameters
 
 - **ios_build_url:** - The URL provided by EAS to track the iOS build
 
-- **android_build_url:** - The URL provided by EAS to track the iOS build
+- **android_build_url:** - The URL provided by EAS to track the Android build
 
 - **status:** - The status of the build - default: 'working' - acceptable values: ["success", "failure", "working", "cancelled"]
 

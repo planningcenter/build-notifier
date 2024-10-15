@@ -91050,6 +91050,7 @@ const NewBuildMessage = ({ actor, appName, commit, context, messageConfig, notes
     const { message } = data;
     const refString = context.ref.replace('refs/heads/', '');
     const isEasBuild = Boolean(iosBuildUrl || androidBuildUrl);
+    const showCommitMessage = !isEasBuild || type !== 'Production';
     const fields = [
         type && `*Type:*\n${type}`,
         number && `*Number:*\n${number}`,
@@ -91058,7 +91059,7 @@ const NewBuildMessage = ({ actor, appName, commit, context, messageConfig, notes
         !isEasBuild && `*Triggered by:*\n${actor.name}`,
         `*Ref:*\n<${buildBaseUrl(context)}/tree/${refString}|${refString}>`,
         `*SHA:*\n*<${commit.data.html_url}|${context.sha.slice(-8)}>*`,
-        `*Commit*\n${message}`,
+        showCommitMessage && `*Commit*\n${message}`,
         notes && `*Notes*\n${notes}`,
         !isEasBuild && generateStatusMessage(status),
         !isEasBuild &&
