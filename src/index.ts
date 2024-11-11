@@ -43,7 +43,14 @@ const inputs: Array<keyof ActionConfig> = [
 ]
 
 const getActionConfig = (): ActionConfig => {
-  let config: ActionConfig = JSON.parse(core.getInput('config'))
+  let configInput = core.getInput('config')
+  let config: ActionConfig
+
+  try {
+    config = JSON.parse(configInput)
+  } catch (error) {
+    throw new Error('Invalid JSON input for config')
+  }
 
   return inputs.reduce((c, input) => {
     const value = core.getInput(input)

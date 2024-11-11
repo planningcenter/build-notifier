@@ -90974,7 +90974,14 @@ const inputs = [
     'android_build_url',
 ];
 const getActionConfig = () => {
-    let config = JSON.parse(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('config'));
+    let configInput = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('config');
+    let config;
+    try {
+        config = JSON.parse(configInput);
+    }
+    catch (error) {
+        throw new Error('Invalid JSON input for config');
+    }
     return inputs.reduce((c, input) => {
         const value = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput(input);
         c[input] = value || c[input] || '';
