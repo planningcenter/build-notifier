@@ -177,7 +177,16 @@ const NewBuildMessage = ({
 }) => {
   const { data } = commit
   const { message } = data
+
   const refString = context.ref.replace('refs/heads/', '')
+  const pullRequest = context.payload.pull_request
+  const refLink = pullRequest
+    ? `*Pull Request:*\n<${pullRequest?.html_url}|${pullRequest.title}>`
+    : `*Ref:*\n<${buildBaseUrl(context)}/tree/${refString}|${refString}>`
+  const commitMessage = pullRequest?.body
+    ? `*Description*\n${pullRequest.body}`
+    : `*Commit*\n${message}`
+
   const isEasBuild = Boolean(iosBuildUrl || androidBuildUrl)
   const showCommitMessage = !isEasBuild || type !== 'Production'
 
@@ -187,9 +196,9 @@ const NewBuildMessage = ({
     appName && `*App:*\n${appName}`,
     version && `*Version:*\n${version}`,
     !isEasBuild && `*Triggered by:*\n${actor.name}`,
-    `*Ref:*\n<${buildBaseUrl(context)}/tree/${refString}|${refString}>`,
+    refLink,
     `*SHA:*\n*<${commit.data.html_url}|${context.sha.slice(-8)}>*`,
-    showCommitMessage && `*Commit*\n${message}`,
+    showCommitMessage && commitMessage,
     notes && `*Notes*\n${notes}`,
     !isEasBuild && generateStatusMessage(status),
     !isEasBuild &&
