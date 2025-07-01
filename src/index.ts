@@ -140,11 +140,16 @@ const updateSlackChannel = async () => {
 }
 
 const getActor = () => octokit.rest.users.getByUsername({ username: context.actor })
-const getCommit = () =>
-  octokit.rest.git.getCommit({
+
+const getCommit = async () => {
+  const isPullRequest = context.eventName === 'pull_request'
+  const headSha = isPullRequest ? context.payload.pull_request?.head.sha : github.context.sha
+
+  return octokit.rest.git.getCommit({
     ...github.context.repo,
-    commit_sha: github.context.sha,
+    commit_sha: headSha,
   })
+}
 
 const NewBuildMessage = ({
   actor,

@@ -91041,10 +91041,14 @@ const updateSlackChannel = async () => {
     }
 };
 const getActor = () => octokit.rest.users.getByUsername({ username: context.actor });
-const getCommit = () => octokit.rest.git.getCommit({
-    ..._actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo,
-    commit_sha: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.sha,
-});
+const getCommit = async () => {
+    const isPullRequest = context.eventName === 'pull_request';
+    const headSha = isPullRequest ? context.payload.pull_request?.head.sha : _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.sha;
+    return octokit.rest.git.getCommit({
+        ..._actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo,
+        commit_sha: headSha,
+    });
+};
 const NewBuildMessage = ({ actor, appName, commit, context, messageConfig, notes, number, status, title, type, version, iosBuildUrl, androidBuildUrl, }) => {
     const { data } = commit;
     const { message } = data;
