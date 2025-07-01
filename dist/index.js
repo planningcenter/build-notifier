@@ -90974,7 +90974,9 @@ const inputs = [
     'android_build_url',
 ];
 const getActionConfig = () => {
-    let config = JSON.parse(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('config'));
+    const configInput = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('config');
+    // Handle empty/missing config input gracefully
+    let config = configInput ? JSON.parse(configInput) : {};
     return inputs.reduce((c, input) => {
         const value = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput(input);
         c[input] = value || c[input] || '';

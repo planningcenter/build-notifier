@@ -43,7 +43,9 @@ const inputs: Array<keyof ActionConfig> = [
 ]
 
 const getActionConfig = (): ActionConfig => {
-  let config: ActionConfig = JSON.parse(core.getInput('config'))
+  const configInput = core.getInput('config')
+  // Handle empty/missing config input gracefully
+  let config: ActionConfig = configInput ? JSON.parse(configInput) : ({} as ActionConfig)
 
   return inputs.reduce((c, input) => {
     const value = core.getInput(input)
