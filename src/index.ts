@@ -43,7 +43,9 @@ const inputs: Array<keyof ActionConfig> = [
 ]
 
 const getActionConfig = (): ActionConfig => {
-  let config: ActionConfig = JSON.parse(core.getInput('config'))
+  const configInput = core.getInput('config')
+  // Handle empty/missing config input gracefully
+  let config: ActionConfig = configInput ? JSON.parse(configInput) : ({} as ActionConfig)
 
   return inputs.reduce((c, input) => {
     const value = core.getInput(input)
@@ -140,11 +142,16 @@ const updateSlackChannel = async () => {
 }
 
 const getActor = () => octokit.rest.users.getByUsername({ username: context.actor })
-const getCommit = () =>
-  octokit.rest.git.getCommit({
+
+const getCommit = async () => {
+  const isPullRequest = context.eventName === 'pull_request'
+  const headSha = isPullRequest ? context.payload.pull_request?.head.sha : github.context.sha
+
+  return octokit.rest.git.getCommit({
     ...github.context.repo,
-    commit_sha: github.context.sha,
+    commit_sha: headSha,
   })
+}
 
 const NewBuildMessage = ({
   actor,
@@ -181,13 +188,20 @@ const NewBuildMessage = ({
   const isEasBuild = Boolean(iosBuildUrl || androidBuildUrl)
   const showCommitMessage = !isEasBuild || type !== 'Production'
 
+  // Create appropriate ref link based on event type
+  const isPullRequest = context.eventName === 'pull_request'
+  const refField =
+    isPullRequest && context.payload.pull_request
+      ? `*Ref:*\n<${buildBaseUrl(context)}/pull/${context.payload.pull_request.number}|PR #${context.payload.pull_request.number}>`
+      : `*Ref:*\n<${buildBaseUrl(context)}/tree/${refString}|${refString}>`
+
   const fields = [
     type && `*Type:*\n${type}`,
     number && `*Number:*\n${number}`,
     appName && `*App:*\n${appName}`,
     version && `*Version:*\n${version}`,
     !isEasBuild && `*Triggered by:*\n${actor.name}`,
-    `*Ref:*\n<${buildBaseUrl(context)}/tree/${refString}|${refString}>`,
+    refField,
     `*SHA:*\n*<${commit.data.html_url}|${context.sha.slice(-8)}>*`,
     showCommitMessage && `*Commit*\n${message}`,
     notes && `*Notes*\n${notes}`,

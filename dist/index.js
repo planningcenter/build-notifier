@@ -90974,7 +90974,9 @@ const inputs = [
     'android_build_url',
 ];
 const getActionConfig = () => {
-    let config = JSON.parse(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('config'));
+    const configInput = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('config');
+    // Handle empty/missing config input gracefully
+    let config = configInput ? JSON.parse(configInput) : {};
     return inputs.reduce((c, input) => {
         const value = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput(input);
         c[input] = value || c[input] || '';
@@ -91041,23 +91043,32 @@ const updateSlackChannel = async () => {
     }
 };
 const getActor = () => octokit.rest.users.getByUsername({ username: context.actor });
-const getCommit = () => octokit.rest.git.getCommit({
-    ..._actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo,
-    commit_sha: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.sha,
-});
+const getCommit = async () => {
+    const isPullRequest = context.eventName === 'pull_request';
+    const headSha = isPullRequest ? context.payload.pull_request?.head.sha : _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.sha;
+    return octokit.rest.git.getCommit({
+        ..._actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo,
+        commit_sha: headSha,
+    });
+};
 const NewBuildMessage = ({ actor, appName, commit, context, messageConfig, notes, number, status, title, type, version, iosBuildUrl, androidBuildUrl, }) => {
     const { data } = commit;
     const { message } = data;
     const refString = context.ref.replace('refs/heads/', '');
     const isEasBuild = Boolean(iosBuildUrl || androidBuildUrl);
     const showCommitMessage = !isEasBuild || type !== 'Production';
+    // Create appropriate ref link based on event type
+    const isPullRequest = context.eventName === 'pull_request';
+    const refField = isPullRequest && context.payload.pull_request
+        ? `*Ref:*\n<${buildBaseUrl(context)}/pull/${context.payload.pull_request.number}|PR #${context.payload.pull_request.number}>`
+        : `*Ref:*\n<${buildBaseUrl(context)}/tree/${refString}|${refString}>`;
     const fields = [
         type && `*Type:*\n${type}`,
         number && `*Number:*\n${number}`,
         appName && `*App:*\n${appName}`,
         version && `*Version:*\n${version}`,
         !isEasBuild && `*Triggered by:*\n${actor.name}`,
-        `*Ref:*\n<${buildBaseUrl(context)}/tree/${refString}|${refString}>`,
+        refField,
         `*SHA:*\n*<${commit.data.html_url}|${context.sha.slice(-8)}>*`,
         showCommitMessage && `*Commit*\n${message}`,
         notes && `*Notes*\n${notes}`,
