@@ -91057,13 +91057,18 @@ const NewBuildMessage = ({ actor, appName, commit, context, messageConfig, notes
     const refString = context.ref.replace('refs/heads/', '');
     const isEasBuild = Boolean(iosBuildUrl || androidBuildUrl);
     const showCommitMessage = !isEasBuild || type !== 'Production';
+    // Create appropriate ref link based on event type
+    const isPullRequest = context.eventName === 'pull_request';
+    const refField = isPullRequest && context.payload.pull_request
+        ? `*Ref:*\n<${buildBaseUrl(context)}/pull/${context.payload.pull_request.number}|PR #${context.payload.pull_request.number}>`
+        : `*Ref:*\n<${buildBaseUrl(context)}/tree/${refString}|${refString}>`;
     const fields = [
         type && `*Type:*\n${type}`,
         number && `*Number:*\n${number}`,
         appName && `*App:*\n${appName}`,
         version && `*Version:*\n${version}`,
         !isEasBuild && `*Triggered by:*\n${actor.name}`,
-        `*Ref:*\n<${buildBaseUrl(context)}/tree/${refString}|${refString}>`,
+        refField,
         `*SHA:*\n*<${commit.data.html_url}|${context.sha.slice(-8)}>*`,
         showCommitMessage && `*Commit*\n${message}`,
         notes && `*Notes*\n${notes}`,
