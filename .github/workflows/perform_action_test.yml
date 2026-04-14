@@ -1,0 +1,37 @@
+name: Perform action test
+
+on:
+  workflow_dispatch:
+    inputs:
+      slackbot_channel:
+        description: "Slack channel ID to post to (make sure to add the bot to your channel)"
+        required: true
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Post initial notification
+        id: working
+        uses: ./
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          slackbot_channel: ${{ inputs.slackbot_channel }}
+          slackbot_secret: ${{ secrets.TEST_SLACKBOT_SECRET }}
+          slackbot_token: ${{ secrets.TEST_SLACKBOT_TOKEN }}
+          title: "Test build notification"
+          status: working
+          build_type: Test
+          build_version: "0.0.0"
+          build_number: "${{ github.run_number }}"
+          app_name: build-notifier
+          include_secrets: true
+
+      - name: Update to success
+        uses: ./
+        with:
+          config: ${{ steps.working.outputs.config }}
+          title: "Test build notification"
+          status: success
