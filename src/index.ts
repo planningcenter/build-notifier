@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import { Context } from '@actions/github/lib/context.js'
 import { OctokitResponse } from '@octokit/types'
 import * as bolt from '@slack/bolt'
 const { context } = github
@@ -171,7 +170,7 @@ const NewBuildMessage = ({
   actor: Actor['data']
   appName: string
   commit: Commit
-  context: Context
+  context: typeof github.context
   messageConfig: MessageConfig
   iosBuildUrl: string
   androidBuildUrl: string

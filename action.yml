@@ -54,6 +54,6 @@ outputs:
   config: # output will be available to future steps
     description: 'The current slack thread'
 runs:
-  using: 'node20'
+  using: 'node24'
   main: 'dist/index.js'
   
